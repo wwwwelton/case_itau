@@ -1,0 +1,39 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Resources:
+  ApiGateway:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: dev
+
+  DecisionLambdaFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: run.lambda_handler
+      Runtime: python3.10
+      CodeUri: .
+      Timeout: 10
+      Environment:
+        Variables:
+          API1_URL: "http://localhost:5001"  # API 1: googleapis.com
+          API2_URL: "http://localhost:5002"  # API 2: openai.com
+      Events:
+        StaticFilesEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /flasgger_static/{proxy+}
+            Method: get
+        SwaggerEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /apidocs
+            Method: get
+        BookEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /book
+            Method: get
