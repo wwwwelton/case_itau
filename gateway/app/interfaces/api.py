@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request
 from flasgger import Swagger, swag_from
 from app.application.services import BookService
 
@@ -15,7 +15,7 @@ swagger = Swagger(app)
                 "type": "array",
                 "items": {"type": "string"},
                 "required": False,
-                "description": "List of authors",
+                "description": "List of authors of the books",
             },
             {
                 "name": "genres",
@@ -111,19 +111,15 @@ swagger = Swagger(app)
         },
     }
 )
-@app.route("/book", methods=["GET"])
-def book():
-    authors = request.args.get("authors", [])
-    genres = request.args.get("genres", [])
-    use_api = request.args.get("use_api", 1)
+@app.route("/", methods=["GET"])
+def index():
+    authors = request.args.get("authors", "")
+    genres = request.args.get("genres", "")
+    use_api = request.args.get("use_api", "-99")
 
-    recommended_books = BookService.get_recommendations(
+    recommended_books = BookService()
+    recommended_books = recommended_books.get_recommendations(
         authors, genres, use_api
     )
 
-    if not recommended_books:
-        return (
-            jsonify({"error": "No recommended books found"}),
-            404,
-        )
-    return jsonify(recommended_books)
+    return recommended_books
