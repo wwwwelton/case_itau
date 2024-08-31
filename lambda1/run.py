@@ -1,4 +1,3 @@
-from flask import jsonify, make_response
 from app.interfaces.api import app
 
 
