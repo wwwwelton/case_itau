@@ -7,6 +7,7 @@ resource "aws_lambda_function" "books_lambda" {
   role          = aws_iam_role.lambda_exec_role.arn
   handler       = "run.lambda_handler"
   runtime       = "python3.10"
+  timeout       = 300
 
   filename = "${path.module}/../function.zip"
 
