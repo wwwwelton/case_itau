@@ -22,7 +22,7 @@ class RequestServiceClass:
 
     def request_openlibrary_books(self, authors, genres):
         api_url = "https://openlibrary.org/search.json?"
-        data = []
+        docs = []
 
         for author in authors:
             limit = 10 if len(authors) / 10 < 1 else len(authors) / 10
@@ -31,7 +31,7 @@ class RequestServiceClass:
             if response.status_code != 200:
                 continue
 
-            data.append(response.json().get("docs", []))
+            docs.append(response.json().get("docs", []))
 
         for genre in genres:
             limit = 10 if len(genres) / 10 < 1 else len(genres) / 10
@@ -40,10 +40,10 @@ class RequestServiceClass:
             if response.status_code != 200:
                 continue
 
-            data.append(response.json().get("docs", []))
+            docs.append(response.json().get("docs", []))
 
         fake_requests = requests.get(api_url, {"q": "twain"})
-        fake_requests.body = json.dumps(data)
+        fake_requests.body = json.dumps(docs)
         data = fake_requests
 
         return data
