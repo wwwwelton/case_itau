@@ -16,8 +16,7 @@ Resources:
       Timeout: 90
       Environment:
         Variables:
-          API1_URL: "http://localhost:5001"  # API 1: googleapis.com
-          API2_URL: "http://localhost:5002"  # API 2: openai.com
+          VAR: ""
       Events:
         BookEvent:
           Type: Api
