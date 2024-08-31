@@ -8,16 +8,14 @@ def lambda_handler(event, context):
         method=event["httpMethod"],
         query_string=event.get("queryStringParameters"),
     ):
-        data = app.full_dispatch_request()
-        response_body = {
-            "status": data["status"],
-            "message": data["message"],
-            "books": data["books"],
-        }
-        response = make_response(jsonify(response_body), data.status_code)
+        response = app.full_dispatch_request()
 
-        return response
+        return {
+            "statusCode": response.status_code,
+            "body": response.get_data(as_text=True),
+            "headers": dict(response.headers),
+        }
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=5001)
+    app.run(debug=True, host="0.0.0.0", port=5000)
