@@ -1,4 +1,4 @@
-AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
 
 Resources:
@@ -7,7 +7,7 @@ Resources:
     Properties:
       StageName: dev
 
-  DecisionLambdaFunction:
+  BooksLambdaFunction:
     Type: AWS::Serverless::Function
     Properties:
       Handler: run.lambda_handler
@@ -21,6 +21,5 @@ Resources:
         BookEvent:
           Type: Api
           Properties:
-            RestApiId: !Ref ApiGateway
             Path: /
             Method: get
