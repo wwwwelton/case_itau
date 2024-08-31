@@ -2,4 +2,5 @@ gateway
 .aws-sam
 __pycache__
 dependencies
+terraform/*
 !terraform/main.tf
