@@ -17,6 +17,9 @@ class RequestServiceClass:
             "maxResults": 20,
             "key": os.getenv("GOOGLE_API"),
         }
+        if os.getenv("GOOGLE_API"):
+            params["key"] = os.getenv("GOOGLE_API")
+
         data = requests.get(api_url, params=params)
 
         return data
