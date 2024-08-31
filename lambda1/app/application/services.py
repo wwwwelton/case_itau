@@ -4,7 +4,7 @@ from flask import jsonify, make_response
 
 
 class BookService:
-    def validate_args(self, authors, genres):
+    def validate_args(self, authors, genres, use_api):
         authors_arguments = True
         genres_arguments = True
 
@@ -12,6 +12,8 @@ class BookService:
             authors_arguments = False
         if not genres or all(not element for element in genres):
             genres_arguments = False
+        if use_api not in {1, 2}:
+            return False
 
         if authors_arguments == False and genres_arguments == False:
             return False
@@ -39,24 +41,25 @@ class BookService:
 
         return books
 
-    def get_recommendations(self, authors, genres):
+    def get_recommendations(self, authors, genres, use_api):
         authors = authors.split(",")
         genres = genres.split(",")
+        use_api = int(use_api) if use_api.isdigit() else -99
 
-        valid_arguments = self.validate_args(authors, genres)
+        valid_arguments = self.validate_args(authors, genres, use_api)
         if valid_arguments == False:
             response_body = {
                 "status": "error",
-                "message": "No arguments were provided",
+                "message": "Invalid arguments or no arguments were provided",
                 "books": [],
             }
             return make_response(jsonify(response_body), 400)
 
-        data = self.request_data(authors, genres, 2)
+        data = self.request_data(authors, genres, use_api)
         data_json = data.json()
 
         if data.status_code == 200:
-            books = self.make_books(data_json, 2)
+            books = self.make_books(data_json, use_api)
             if not books:
                 response_body = {
                     "status": "error",
@@ -72,9 +75,14 @@ class BookService:
                 }
                 response = make_response(jsonify(response_body), 200)
         else:
+            message = (
+                "No recommended books found"
+                if data.status_code == 404
+                else data_json.get("error", {}).get("message", "")
+            )
             response_body = {
                 "status": "error",
-                "message": data_json.get("error", {}).get("message"),
+                "message": message,
                 "books": [],
             }
             status_code = data.status_code
