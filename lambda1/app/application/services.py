@@ -30,6 +30,13 @@ class BookService:
 
         return data
 
+    def make_books(self, data, use_api):
+        if use_api == 1:
+            books = BookClass()
+            books = books.make_google_books(data)
+
+        return books
+
     def get_recommendations(self, authors, genres):
         authors = authors.split(",")
         genres = genres.split(",")
@@ -47,8 +54,7 @@ class BookService:
         data_json = data.json()
 
         if data.status_code == 200:
-            books = BookClass()
-            books = books.make_google_books(data_json)
+            books = self.make_books(data_json, 1)
             if not books:
                 response_body = {
                     "status": "error",
