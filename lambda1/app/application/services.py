@@ -1,3 +1,4 @@
+from app.application.request_service import RequestServiceClass
 from app.domain.models import BookClass
 from flask import jsonify, make_response
 import requests
@@ -18,15 +19,11 @@ class BookService:
         else:
             return True
 
-    def call_external_api(self, authors, genres):
-        api_url = "https://www.googleapis.com/books/v1/volumes"
+    def request_data(self, authors, genres, use_api):
+        request_service = RequestServiceClass()
 
-        query_authors = "+".join([f"inauthor:{author}" for author in authors])
-        query_genres = "+".join([f"subject:{subject}" for subject in genres])
-        query_string = f"{query_authors}+{query_genres}"
-
-        params = {"q": query_string, "maxResults": 20}
-        data = requests.get(api_url, params=params)
+        if use_api == 1:
+            data = request_service.request_google_books(authors, genres)
 
         return data
 
@@ -50,7 +47,7 @@ class BookService:
             }
             return make_response(jsonify(response_body), 400)
 
-        data = self.call_external_api(authors, genres)
+        data = self.request_data(authors, genres, 1)
         data_json = data.json()
 
         if data.status_code == 200:
