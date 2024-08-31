@@ -1,3 +1,4 @@
+from flask import json
 import requests
 
 
@@ -11,5 +12,36 @@ class RequestServiceClass:
 
         params = {"q": query_string, "maxResults": 20}
         data = requests.get(api_url, params=params)
+
+        return data
+
+    def request_openlibrary_books(self, authors, genres):
+        api_url = "https://openlibrary.org/search.json?"
+        data = []
+
+        fake_requests = requests.get(api_url, {"q": "twain"})
+
+        for author in authors:
+            limit = 10 if len(authors) / 10 < 1 else len(authors) / 10
+            params = {"author": author, "sort": "new", "limit": limit}
+            response = requests.get(api_url, params=params)
+            fake_requests.status_code = response.status_code
+            if response.status_code != 200:
+                continue
+
+            data.append(response.json().get("docs", []))
+
+        for genre in genres:
+            limit = 10 if len(genres) / 10 < 1 else len(genres) / 10
+            params = {"subject": genre, "sort": "new", "limit": limit}
+            response = requests.get(api_url, params=params)
+            fake_requests.status_code = response.status_code
+            if response.status_code != 200:
+                continue
+
+            data.append(response.json().get("docs", []))
+
+        fake_requests.body = json.dumps(data)
+        data = fake_requests
 
         return data

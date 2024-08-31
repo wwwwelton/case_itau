@@ -24,6 +24,8 @@ class BookService:
 
         if use_api == 1:
             data = request_service.request_google_books(authors, genres)
+        if use_api == 2:
+            data = request_service.request_openlibrary_books(authors, genres)
 
         return data
 
