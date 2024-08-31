@@ -28,3 +28,31 @@ class BookClass:
             "buy_link": self.buy_link,
             "image_link": self.image_link,
         }
+
+    def make_google_books(self, data):
+        books = []
+
+        for item in data.get("items", []):
+            volume_info = item.get("volumeInfo", {})
+            sale_info = item.get("saleInfo", {})
+
+            book = BookClass(
+                title=volume_info.get("title", ""),
+                subtitle=volume_info.get("subtitle", ""),
+                description=volume_info.get("description", ""),
+                authors=volume_info.get("authors", []),
+                genres=volume_info.get("categories", []),
+                language=volume_info.get("language", ""),
+                publisher=volume_info.get("publisher", ""),
+                published_date=volume_info.get("publishedDate", ""),
+                isbn=volume_info.get("industryIdentifiers", []),
+                page_count=volume_info.get("pageCount", ""),
+                buy_link=sale_info.get("buyLink", ""),
+                image_link=volume_info.get("imageLinks", {}).get(
+                    "thumbnail", ""
+                ),
+            )
+
+            books.append(book.to_dict())
+
+        return books
