@@ -1,4 +1,5 @@
 gateway
 .aws-sam
-lambda1
 __pycache__
+dependencies
+!terraform/main.tf
