@@ -42,7 +42,7 @@ class BookClass:
                 description=volume_info.get("description", ""),
                 authors=volume_info.get("authors", []),
                 genres=volume_info.get("categories", []),
-                language=volume_info.get("language", ""),
+                language=volume_info.get("language", []),
                 publisher=volume_info.get("publisher", ""),
                 published_date=volume_info.get("publishedDate", ""),
                 isbn=volume_info.get("industryIdentifiers", []),
@@ -51,6 +51,31 @@ class BookClass:
                 image_link=volume_info.get("imageLinks", {}).get(
                     "thumbnail", ""
                 ),
+            )
+
+            books.append(book.to_dict())
+
+        return books
+
+    def make_openlibrary_books(self, data):
+        books = []
+        amz_store = "https://www.amazon.com.br/dp/"
+        cover_url = "https://covers.openlibrary.org/b/id/"
+
+        for doc in data.get("docs", []):
+            book = BookClass(
+                title=doc.get("title", ""),
+                subtitle=doc.get("title_suggest", ""),
+                description=doc.get("first_sentence", ""),
+                authors=doc.get("author_name", []),
+                genres=doc.get("subject", []),
+                language=doc.get("language", []),
+                publisher=doc.get("publisher", ""),
+                published_date=doc.get("publish_year", ""),
+                isbn=doc.get("isbn", []),
+                page_count=doc.get("number_of_pages_median", ""),
+                buy_link=f"{amz_store}{doc.get('buyLink', '')}",
+                image_link=f"{cover_url}{doc.get('cover_i', '')}.jpg",
             )
 
             books.append(book.to_dict())

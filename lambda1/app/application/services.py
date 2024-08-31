@@ -1,7 +1,6 @@
 from app.application.request_service import RequestServiceClass
 from app.domain.models import BookClass
 from flask import jsonify, make_response
-import requests
 
 
 class BookService:
@@ -30,9 +29,13 @@ class BookService:
         return data
 
     def make_books(self, data, use_api):
+        book_obj = BookClass()
+        books = []
+
         if use_api == 1:
-            books = BookClass()
-            books = books.make_google_books(data)
+            books = book_obj.make_google_books(data)
+        if use_api == 2:
+            books = book_obj.make_openlibrary_books(data)
 
         return books
 
@@ -49,11 +52,11 @@ class BookService:
             }
             return make_response(jsonify(response_body), 400)
 
-        data = self.request_data(authors, genres, 1)
+        data = self.request_data(authors, genres, 2)
         data_json = data.json()
 
         if data.status_code == 200:
-            books = self.make_books(data_json, 1)
+            books = self.make_books(data_json, 2)
             if not books:
                 response_body = {
                     "status": "error",
@@ -74,7 +77,7 @@ class BookService:
                 "message": data_json.get("error", {}).get("message"),
                 "books": [],
             }
-            status_code = data_json.get("error", {}).get("code")
+            status_code = data.status_code
             response = make_response(jsonify(response_body), status_code)
 
         return response
