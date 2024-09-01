@@ -1,4 +1,7 @@
+from flask.cli import load_dotenv
 from app.interfaces.api import app
+
+load_dotenv()
 
 
 def lambda_handler(event, context):
