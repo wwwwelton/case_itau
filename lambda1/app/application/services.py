@@ -56,8 +56,17 @@ class BookService:
             }
             return make_response(jsonify(response_body), 400)
 
-        data = self.request_data(authors, genres, use_api)
-        data_json = data.json()
+        try:
+            data = self.request_data(authors, genres, use_api)
+            data_json = data.json()
+        except:
+            response_body = {
+                "status": "error",
+                "message": "No search API available at this time",
+                "books": [],
+            }
+            response = make_response(jsonify(response_body), 408)
+            return response
 
         if data.status_code == 200:
             books = self.make_books(data_json, use_api)
