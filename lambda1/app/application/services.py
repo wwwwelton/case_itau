@@ -1,3 +1,4 @@
+from app.application.llm_service import LlmServiceClass
 from app.application.request_service import RequestServiceClass
 from app.domain.models import BookClass
 from flask import jsonify, make_response
@@ -60,6 +61,7 @@ class BookService:
 
         if data.status_code == 200:
             books = self.make_books(data_json, use_api)
+            books = LlmServiceClass.llm_improve_result(books)
             if not books:
                 response_body = {
                     "status": "error",
