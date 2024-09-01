@@ -11,7 +11,7 @@ pip install -r requirements.txt -t $DEPENDENCIES_DIR
 
 echo "Zipping files..."
 # zip -r $ZIP_FILE $ENTRY_POINT .
-zip -r $ENTRY_POINT/$ZIP_FILE . -x ".aws-sam/*" "venv/*" "terraform/*" "function.zip" "README.md" "__pycache__/*" ".gitignore"
+zip -r $ENTRY_POINT/$ZIP_FILE . -x ".aws-sam/*" "venv/*" "terraform/*" "function.zip" "README.md" "__pycache__/*" ".gitignore" ".env"
 
 if [ -f "$ZIP_FILE" ]; then
   echo "Lambda package created successfully: $ZIP_FILE"
