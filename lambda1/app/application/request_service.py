@@ -7,20 +7,35 @@ from requests.models import Response
 class RequestServiceClass:
     def request_google_books(self, authors, genres):
         api_url = "https://www.googleapis.com/books/v1/volumes"
+        items = []
 
-        query_authors = "+".join([f"inauthor:{author}" for author in authors])
-        query_genres = "+".join([f"subject:{subject}" for subject in genres])
-        query_string = f"{query_authors}+{query_genres}"
+        limit = len(authors) + len(genres)
+        limit = 20 if limit / 10 < 1 else len(limit) / 10
 
-        params = {
-            "q": query_string,
-            "maxResults": 20,
-            "key": os.getenv("GOOGLE_API"),
-        }
-        if os.getenv("GOOGLE_API"):
-            params["key"] = os.getenv("GOOGLE_API")
+        for author in authors:
+            params = {"q": f"inauthor:{author}", "maxResults": limit}
+            if os.getenv("GOOGLE_API"):
+                params["key"] = os.getenv("GOOGLE_API")
+            response = requests.get(api_url, params=params)
+            if response.status_code != 200:
+                continue
 
-        data = requests.get(api_url, params=params)
+            items.extend(response.json().get("items", []))
+
+        for genre in genres:
+            params = {"q": f"subject:{genre}", "maxResults": limit}
+            if os.getenv("GOOGLE_API"):
+                params["key"] = os.getenv("GOOGLE_API")
+            response = requests.get(api_url, params=params)
+            if response.status_code != 200:
+                continue
+
+            items.extend(response.json().get("items", []))
+
+        data = Response()
+        data.status_code = 200 if items else 404
+        data._content = json.dumps({"items": items}).encode("utf-8")
+        data.headers["Content-Type"] = "application/json"
 
         return data
 
@@ -29,7 +44,7 @@ class RequestServiceClass:
         docs = []
 
         limit = len(authors) + len(genres)
-        limit = 10 if limit / 10 < 1 else len(limit) / 10
+        limit = 20 if limit / 10 < 1 else len(limit) / 10
 
         for author in authors:
             params = {"author": author, "sort": "new", "limit": limit}
