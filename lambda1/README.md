@@ -23,6 +23,7 @@ Utilizando [Python](https://www.python.org/) e com base no fator escalabilidade,
 ├── README.md
 ├── app
 │   ├── application
+│   │   ├── llm_service.py
 │   │   ├── request_service.py
 │   │   └── services.py
 │   ├── domain
@@ -31,7 +32,6 @@ Utilizando [Python](https://www.python.org/) e com base no fator escalabilidade,
 │   │   └── repositories.py
 │   └── interfaces
 │       └── api.py
-├── function.zip
 ├── requirements.txt
 ├── run.py
 ├── setup.sh
@@ -176,7 +176,7 @@ terraform destroy -auto-approve
 > | nome              |  tipo     | tipo de dado      | descrição                         |
 > |-------------------|-----------|----------------|-------------------------------------|
 > | `authors` |  opcional | lista de string  | Pesquisa por livros atráves de um ou mais autores        |
-> | `use_api` |  obrigatório | inteiro  | Seleciona a API de pesquisa externa 1 ou 2        |
+> | `use_api` |  opcional | inteiro  | Seleciona a API de pesquisa externa 1 ou 2        |
 
 ##### Respostas
 
@@ -202,7 +202,7 @@ terraform destroy -auto-approve
 > | nome              |  tipo     | tipo de dado      | descrição                         |
 > |-------------------|-----------|----------------|-------------------------------------|
 > | `genres` |  opcional | lista de string  | Pesquisa por livros atráves de um ou mais gêneros        |
-> | `use_api` |  obrigatório | inteiro  | Seleciona a API de pesquisa externa 1 ou 2        |
+> | `use_api` |  opcional | inteiro  | Seleciona a API de pesquisa externa 1 ou 2        |
 
 ##### Respostas
 
@@ -229,7 +229,7 @@ terraform destroy -auto-approve
 > |-------------------|-----------|----------------|-------------------------------------|
 > | `authors` |  opcional | lista de string  | Pesquisa por livros atráves de um ou mais autores        |
 > | `genres` |  opcional | lista de string  | Pesquisa por livros atráves de um ou mais gêneros        |
-> | `use_api` |  obrigatório | inteiro  | Seleciona a API de pesquisa externa 1 ou 2        |
+> | `use_api` |  opcional | inteiro  | Seleciona a API de pesquisa externa 1 ou 2        |
 
 ##### Respostas
 
@@ -249,13 +249,18 @@ terraform destroy -auto-approve
 
 </br>
 
+##### Observações
 ```Qualquer consulta além do método GET ou path não especificados resultaram em erro.```
+```O parâmetro {use_api} tem por padrão o valor 2.```
+```Se a aplicação não encontrar a variável de ambiente {OPENAI_API_KEY} ela simplesmente devolve a lista de livros sem tratamento pela LLM.```
+```Se a aplicação não encontrar a variável de ambiente {GOOGLE_API} pode acontecer um limite de requisições diárias por IP, resultado em falha na consulta.```
 
 ---
 
 ## Links úteis
 | Nome | Link |
 | - | - |
+| OpenAI Docs | https://platform.openai.com/docs/overview |
 | AWS Lambda Documentation | https://docs.aws.amazon.com/lambda/ |
 | Amazon API Gateway Documentation | https://docs.aws.amazon.com/apigateway/ |
 | Terraform Docs Overview | https://developer.hashicorp.com/terraform/docs |
