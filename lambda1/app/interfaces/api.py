@@ -30,8 +30,8 @@ swagger = Swagger(app)
                 "in": "query",
                 "type": "integer",
                 "required": False,
-                "description": "Select 1 for Google API or 2 for Open Library Generation",
-                "default": 1,
+                "description": "Select 1 for Google API or 2 for Open Library",
+                "default": 2,
             },
         ],
         "responses": {
@@ -151,7 +151,7 @@ swagger = Swagger(app)
 def index():
     authors = request.args.get("authors", "")
     genres = request.args.get("genres", "")
-    use_api = request.args.get("use_api", "-99")
+    use_api = request.args.get("use_api", "2")
 
     recommended_books = BookService()
     recommended_books = recommended_books.get_recommendations(
