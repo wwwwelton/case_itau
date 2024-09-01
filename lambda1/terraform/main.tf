@@ -15,7 +15,9 @@ resource "aws_lambda_function" "books_lambda" {
 
   environment {
     variables = {
-      PYTHONPATH = "/var/task/dependencies"
+      PYTHONPATH     = "/var/task/dependencies"
+      GOOGLE_API     = var.GOOGLE_API
+      OPENAI_API_KEY = var.OPENAI_API_KEY
     }
   }
 }
