@@ -1,9 +1,14 @@
-# Case Técnico para Vaga de Engenheiro de Software
+# Case Técnico para Vaga de Engenheiro de Software Itaú
 ### Descrição do projeto
 Este projeto é uma API que retorna uma lista de livros com base em autor e/ou gênero de livro preferido.
 
 ### Arquitetura e serviços utilizados
 Utilizando [Python](https://www.python.org/) e com base no fator escalabilidade, foi utilizado o serviço [Amazon API Gateway](https://aws.amazon.com/pt/api-gateway/) que invoca uma [AWS Lambda](https://aws.amazon.com/pt/lambda/). Para extender as funcionalidades e permitir mais recursos, o framework [Flask](https://flask.palletsprojects.com/en/3.0.x/) é quem defina as rotas da API. Foram utilizados os serviços externos para consulta [Google Books APIs](https://developers.google.com/books/docs/overview?hl=pt-br) e [Open Library](https://openlibrary.org/) com o objetivo de principal de facilitar o teste da aplicação porque ambos não obrigam o uso de uma chave de autorização.
+Com o objetivo de refinar o resultado de busca, a LLM da [OpenAI](https://openai.com/) com o modelo [gpt-4o-mini](https://openai.com/index/gpt-4o-mini-advancing-cost-efficient-intelligence/) foi implementado para dois casos de uso, o primeiro sendo o ranqueamento para filtrar os 10 melhores livros e o segundo para melhorar e corrigir campos como idioma e data de publicação.
+O modelo [gpt-4o-mini](https://openai.com/index/gpt-4o-mini-advancing-cost-efficient-intelligence/) foi escolhido para obter o melhor balanço entre qualidade, custo e velocidade. Testado extensivamente atráves do [playground](https://platform.openai.com/playground/) da OpenAi. Algumas ténicas foram aplicadas no prompt, como definir uma personalidade e usar parâmetros como temperature baixa, afim de evitar alteração do conteúdo e alucinações.
+
+### Ilustração da arquitetura utilizada
+IMAGEM AQUI
 
 ## Começando
 #### Requisitos:
@@ -32,13 +37,19 @@ Utilizando [Python](https://www.python.org/) e com base no fator escalabilidade,
 │   │   └── repositories.py
 │   └── interfaces
 │       └── api.py
+├── function.zip
 ├── requirements.txt
 ├── run.py
 ├── setup.sh
 ├── template.yaml
+├── .env
 └── terraform
-    └── main.tf
+    ├── main.tf
+    └── variables.tf
 ```
+
+#### Antes de começar
+```Na raíz do projeto existe um arquivo chamado .env e na pasta terraform outro variables.tf. Preencha as variáveis de ambiente {GOOGLE_API} com uma chave válida do serviço Google Books APIs para evitar um possível limite de chamadas usando o parâmetro use_api=1. Para refinar os resultados usando LLM com a API da OpenAI, preencha a varíavel {OPENAI_API_KEY}. No caso de ignorar a variável {GOOGLE_API} pode ocorrer simplesmente um erro na chamada resultando em erro na busca. Caso a variável {OPENAI_API_KEY} for inexistente, o sistema simplesmente não envia os resultados para o serviço da OpenAI e o retorno será o resultado bruto das APIs de busca externa.```
 
 #### Rodando localmente
 ```Obs: A pasta contém um arquivo template.yaml para ser usado com AWS SAM CLI para testar localmente se desejado simular um ambiente mais próximo da AWS.```
@@ -247,13 +258,16 @@ terraform destroy -auto-approve
 
 </details>
 
+#### Exemplo de uso com um programa de consultas
+IMAGEM AQUI
+
 </br>
 
 ##### Observações
 ```Qualquer consulta além do método GET ou path não especificados resultaram em erro.```
 ```O parâmetro {use_api} tem por padrão o valor 2.```
 ```Se a aplicação não encontrar a variável de ambiente {OPENAI_API_KEY} ela simplesmente devolve a lista de livros sem tratamento pela LLM.```
-```Se a aplicação não encontrar a variável de ambiente {GOOGLE_API} pode acontecer um limite de requisições diárias por IP, resultado em falha na consulta.```
+```Se a aplicação não encontrar a variável de ambiente {GOOGLE_API} pode acontecer um limite de requisições diárias, resultado em falha na consulta.```
 
 ---
 
@@ -261,6 +275,7 @@ terraform destroy -auto-approve
 | Nome | Link |
 | - | - |
 | OpenAI Docs | https://platform.openai.com/docs/overview |
+| OpenAI Playground | https://platform.openai.com/playground |
 | AWS Lambda Documentation | https://docs.aws.amazon.com/lambda/ |
 | Amazon API Gateway Documentation | https://docs.aws.amazon.com/apigateway/ |
 | Terraform Docs Overview | https://developer.hashicorp.com/terraform/docs |
