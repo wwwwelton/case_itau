@@ -166,7 +166,8 @@ terraform destroy -auto-approve
 
 #### Realizando as requisições
 
-<details>
+---
+
  <summary><code>GET</code> <code><b>/</b></code> <code>(retorna um erro de parâmetros inválidos ou ausentes)</code></summary>
 
 ##### Parâmetros
@@ -185,9 +186,8 @@ terraform destroy -auto-approve
 >  curl -X GET "http://localhost:5000/" -H "accept: application/json"
 > ```
 
-</details>
+---
 
-<details>
  <summary><code>GET</code> <code><b>/?{authors}&{use_api}</b></code> <code>(retorna uma lista de livros com base nos autores)</code></summary>
 
 ##### Parâmetros
@@ -211,9 +211,8 @@ terraform destroy -auto-approve
 >  curl -X GET "http://localhost:5000/?authors=J.K.%20Rowling,J.R.R.%20Tolkien&use_api=1" -H "accept: application/json"
 > ```
 
-</details>
+---
 
-<details>
  <summary><code>GET</code> <code><b>/?{genres}&{use_api}</b></code> <code>(retorna uma lista de livros com base nos gêneros)</code></summary>
 
 ##### Parâmetros
@@ -237,9 +236,8 @@ terraform destroy -auto-approve
 >  curl -X GET "http://localhost:5000/?genres=Fantasy,Adventure&use_api=2" -H "accept: application/json"
 > ```
 
-</details>
+---
 
-<details>
  <summary><code>GET</code> <code><b>/?{authors}&{genres}&{use_api}</b></code> <code>(retorna uma lista de livros com base nos autores e gêneros)</code></summary>
 
 ##### Parâmetros
@@ -264,7 +262,7 @@ terraform destroy -auto-approve
 >  curl -X GET "http://localhost:5000/?authors=J.R.R.%20Tolkien,J.K.%20Rowling&genres=Fantasy,Adventure&use_api=2" -H "accept: application/json"
 > ```
 
-</details>
+---
 
 #### Exemplo de uso com um programa de consultas
 ![Alt text](images/request_app_image.png)
