@@ -12,6 +12,7 @@ def get_apispec_path(stage_name):
     else:
         return "/apispec/apispec_1.json"
 
+
 def get_redirect_path(path):
     stage_name = get_stage_name()
     if stage_name:
@@ -26,6 +27,19 @@ def make_swagger_config():
     swagger_config = Swagger.DEFAULT_CONFIG.copy()
     swagger_config.update(
         {
+            "swagger": "2.0",
+            "info": {
+                "title": "API de busca de livros",
+                "description": "Este projeto é uma API que retorna uma lista de livros com base em autores e/ou gêneros de livros.",
+                "version": "1.0.0",
+                "contact": {
+                    "linkedin": "https://www.linkedin.com/in/welton-leite-b3492985/"
+                },
+                "license": {
+                    "name": "GNU General Public License v3.0",
+                    "url": "https://www.gnu.org/licenses/gpl-3.0.html",
+                },
+            },
             "swagger_ui_bundle_js": "//unpkg.com/swagger-ui-dist@3.28.0/swagger-ui-bundle.js",
             "swagger_ui_standalone_preset_js": "//unpkg.com/swagger-ui-dist@3.28.0/swagger-ui-standalone-preset.js",
             "jquery_js": "//unpkg.com/jquery@2.2.4/dist/jquery.min.js",
