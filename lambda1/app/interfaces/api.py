@@ -2,7 +2,7 @@ from flask import Flask, redirect, request
 from flasgger import Swagger
 from app.application.services import BookService
 from app.interfaces.utils import get_redirect_path, make_swagger_config
-from dependencies.flasgger.utils import swag_from
+from flasgger.utils import swag_from
 
 app = Flask(__name__)
 swagger = Swagger(app, config=make_swagger_config())
