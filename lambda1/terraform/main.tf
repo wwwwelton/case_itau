@@ -18,6 +18,7 @@ resource "aws_lambda_function" "books_lambda" {
       PYTHONPATH     = "/var/task/dependencies"
       GOOGLE_API     = var.GOOGLE_API
       OPENAI_API_KEY = var.OPENAI_API_KEY
+      STAGE_NAME     = var.STAGE_NAME
     }
   }
 }
@@ -60,17 +61,67 @@ resource "aws_api_gateway_rest_api" "books_lambda" {
   description = "API Gateway for Books Lambda Function"
 }
 
-resource "aws_api_gateway_method" "get_method" {
+resource "aws_api_gateway_resource" "apidocs_resource" {
+  rest_api_id = aws_api_gateway_rest_api.books_lambda.id
+  parent_id   = aws_api_gateway_rest_api.books_lambda.root_resource_id
+  path_part   = "apidocs"
+}
+
+resource "aws_api_gateway_resource" "apispec_json_resource" {
+  rest_api_id = aws_api_gateway_rest_api.books_lambda.id
+  parent_id   = aws_api_gateway_rest_api.books_lambda.root_resource_id
+  path_part   = "apispec"
+}
+
+resource "aws_api_gateway_resource" "apispec_1_json_resource" {
+  rest_api_id = aws_api_gateway_rest_api.books_lambda.id
+  parent_id   = aws_api_gateway_resource.apispec_json_resource.id
+  path_part   = "apispec_1.json"
+}
+
+resource "aws_api_gateway_method" "get_method_root" {
   rest_api_id   = aws_api_gateway_rest_api.books_lambda.id
   resource_id   = aws_api_gateway_rest_api.books_lambda.root_resource_id
   http_method   = "GET"
   authorization = "NONE"
 }
 
-resource "aws_api_gateway_integration" "lambda_integration" {
+resource "aws_api_gateway_method" "get_method_apidocs" {
+  rest_api_id   = aws_api_gateway_rest_api.books_lambda.id
+  resource_id   = aws_api_gateway_resource.apidocs_resource.id
+  http_method   = "GET"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_method" "get_method_apispec_json" {
+  rest_api_id   = aws_api_gateway_rest_api.books_lambda.id
+  resource_id   = aws_api_gateway_resource.apispec_1_json_resource.id
+  http_method   = "GET"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_integration" "lambda_integration_root" {
   rest_api_id             = aws_api_gateway_rest_api.books_lambda.id
   resource_id             = aws_api_gateway_rest_api.books_lambda.root_resource_id
-  http_method             = aws_api_gateway_method.get_method.http_method
+  http_method             = aws_api_gateway_method.get_method_root.http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.books_lambda.invoke_arn
+}
+
+resource "aws_api_gateway_integration" "lambda_integration_apidocs" {
+  rest_api_id             = aws_api_gateway_rest_api.books_lambda.id
+  resource_id             = aws_api_gateway_resource.apidocs_resource.id
+  http_method             = aws_api_gateway_method.get_method_apidocs.http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.books_lambda.invoke_arn
+}
+
+resource "aws_api_gateway_integration" "lambda_integration_apispec_json" {
+  rest_api_id             = aws_api_gateway_rest_api.books_lambda.id
+  resource_id             = aws_api_gateway_resource.apispec_1_json_resource.id
+  http_method             = aws_api_gateway_method.get_method_apispec_json.http_method
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
   uri                     = aws_lambda_function.books_lambda.invoke_arn
@@ -85,9 +136,9 @@ resource "aws_lambda_permission" "apigw_lambda" {
 }
 
 resource "aws_api_gateway_deployment" "books_lambda_deployment" {
-  depends_on  = [aws_api_gateway_integration.lambda_integration]
+  depends_on  = [aws_api_gateway_integration.lambda_integration_root, aws_api_gateway_integration.lambda_integration_apidocs, aws_api_gateway_integration.lambda_integration_apispec_json]
   rest_api_id = aws_api_gateway_rest_api.books_lambda.id
-  stage_name  = "dev"
+  stage_name  = var.STAGE_NAME
 }
 
 output "api_gateway_url" {

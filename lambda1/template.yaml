@@ -13,7 +13,7 @@ Resources:
       Handler: run.lambda_handler
       Runtime: python3.10
       CodeUri: .
-      Timeout: 90
+      Timeout: 300
       Environment:
         Variables:
           VAR: ""
@@ -22,4 +22,14 @@ Resources:
           Type: Api
           Properties:
             Path: /
+            Method: get
+        SwaggerEvent:
+          Type: Api
+          Properties:
+            Path: /apidocs
+            Method: get
+        SwaggerEventJSON:
+          Type: Api
+          Properties:
+            Path: /apispec/apispec_1.json
             Method: get

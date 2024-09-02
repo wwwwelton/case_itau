@@ -1,9 +1,11 @@
-from flask import Flask, request
-from flasgger import Swagger, swag_from
+from flask import Flask, redirect, request
+from flasgger import Swagger
 from app.application.services import BookService
+from app.interfaces.utils import get_redirect_path, make_swagger_config
+from dependencies.flasgger.utils import swag_from
 
 app = Flask(__name__)
-swagger = Swagger(app)
+swagger = Swagger(app, config=make_swagger_config())
 
 
 @swag_from(
@@ -13,7 +15,7 @@ swagger = Swagger(app)
                 "name": "authors",
                 "in": "query",
                 "type": "array",
-                "items": {"type": "string", "default": ""},
+                "items": {"type": "string"},
                 "required": False,
                 "description": "List of authors of the books",
             },
@@ -21,7 +23,7 @@ swagger = Swagger(app)
                 "name": "genres",
                 "in": "query",
                 "type": "array",
-                "items": {"type": "string", "default": ""},
+                "items": {"type": "string"},
                 "required": False,
                 "description": "List of genres of the books",
             },
@@ -159,3 +161,13 @@ def index():
     )
 
     return recommended_books
+
+
+@app.route("/apispec/apispec_1.json")
+def apispec():
+    return swagger.get_apispecs()
+
+
+@app.route("/apidocs", methods=["GET"])
+def redirect_to_apidocs():
+    return redirect(get_redirect_path("apidocs"), code=302)

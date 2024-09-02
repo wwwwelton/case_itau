@@ -9,3 +9,9 @@ variable "OPENAI_API_KEY" {
   default     = ""
   description = "Chave da OpenAI"
 }
+
+variable "STAGE_NAME" {
+  type        = string
+  default     = "dev"
+  description = "O estágio atual de deploy da API (dev ou prod)."
+}
