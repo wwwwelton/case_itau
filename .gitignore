@@ -1,6 +1,7 @@
 .aws-sam
 __pycache__
-dependencies
+/dependencies
+/venv
 terraform/*
 !terraform/main.tf
 !variables.tf
