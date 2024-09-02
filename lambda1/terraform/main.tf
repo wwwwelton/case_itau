@@ -142,6 +142,11 @@ resource "aws_api_gateway_deployment" "books_lambda_deployment" {
 }
 
 output "api_gateway_url" {
-  value       = aws_api_gateway_deployment.books_lambda_deployment.invoke_url
+  value       = "${aws_api_gateway_deployment.books_lambda_deployment.invoke_url}/"
   description = "The URL of the Books API"
+}
+
+output "apidocs" {
+  value       = "${aws_api_gateway_deployment.books_lambda_deployment.invoke_url}/apidocs/"
+  description = "The URL of the OpenAPI/Swagger"
 }
