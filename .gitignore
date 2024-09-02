@@ -1,5 +1,6 @@
-bin
-bruno_api
-lib
-pyvenv.cfg
+.aws-sam
 __pycache__
+dependencies
+terraform/*
+!terraform/main.tf
+!variables.tf
