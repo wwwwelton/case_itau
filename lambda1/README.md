@@ -1,14 +1,14 @@
 # Case Técnico para Vaga de Engenheiro de Software Itaú
 ### Descrição do projeto
-Este projeto é uma API que retorna uma lista de livros com base em autor e/ou gênero de livro preferido.
+Este projeto é uma API que retorna uma lista de livros com base em autores e/ou gêneros de livros.
 
 ### Arquitetura e serviços utilizados
-Utilizando [Python](https://www.python.org/) e com base no fator escalabilidade, foi utilizado o serviço [Amazon API Gateway](https://aws.amazon.com/pt/api-gateway/) que invoca uma [AWS Lambda](https://aws.amazon.com/pt/lambda/). Para extender as funcionalidades e permitir mais recursos, o framework [Flask](https://flask.palletsprojects.com/en/3.0.x/) é quem defina as rotas da API. Foram utilizados os serviços externos para consulta [Google Books APIs](https://developers.google.com/books/docs/overview?hl=pt-br) e [Open Library](https://openlibrary.org/) com o objetivo de principal de facilitar o teste da aplicação porque ambos não obrigam o uso de uma chave de autorização.
-Com o objetivo de refinar o resultado de busca, a LLM da [OpenAI](https://openai.com/) com o modelo [gpt-4o-mini](https://openai.com/index/gpt-4o-mini-advancing-cost-efficient-intelligence/) foi implementado para dois casos de uso, o primeiro sendo o ranqueamento para filtrar os 10 melhores livros e o segundo para melhorar e corrigir campos como idioma e data de publicação.
-O modelo [gpt-4o-mini](https://openai.com/index/gpt-4o-mini-advancing-cost-efficient-intelligence/) foi escolhido para obter o melhor balanço entre qualidade, custo e velocidade. Testado extensivamente atráves do [playground](https://platform.openai.com/playground/) da OpenAi. Algumas ténicas foram aplicadas no prompt, como definir uma personalidade e usar parâmetros como temperature baixa, afim de evitar alteração do conteúdo e alucinações.
+Utilizando [Python](https://www.python.org/) e com base no fator escalabilidade, foi utilizado o serviço [Amazon API Gateway](https://aws.amazon.com/pt/api-gateway/) que invoca uma [AWS Lambda](https://aws.amazon.com/pt/lambda/). Para estender as funcionalidades e permitir mais recursos, o framework [Flask](https://flask.palletsprojects.com/en/3.0.x/) é quem defina as rotas da API. Foram utilizados os serviços externos para consulta [Google Books APIs](https://developers.google.com/books/docs/overview?hl=pt-br) e [Open Library](https://openlibrary.org/) para facilitar o teste da aplicação porque ambos não obrigam o uso de uma chave de autorização.
+Visando refinar o resultado de busca, a LLM da [OpenAI](https://openai.com/) com o modelo [gpt-4o-mini](https://openai.com/index/gpt-4o-mini-advancing-cost-efficient-intelligence/) foi implementado para dois casos de uso, o primeiro sendo o ranqueamento para filtrar os 10 melhores livros e o segundo para melhorar e corrigir campos como idioma e data de publicação.
+O modelo [gpt-4o-mini](https://openai.com/index/gpt-4o-mini-advancing-cost-efficient-intelligence/) foi escolhido para obter o melhor balanço entre qualidade, custo e velocidade. Testado extensivamente através do [playground](https://platform.openai.com/playground/) da OpenAi. Algumas técnicas foram aplicadas no prompt, como definir uma personalidade e usar parâmetros como temperatura baixa, a fim de de evitar alteração do conteúdo e alucinações.
 
 ### Ilustração da arquitetura utilizada
-IMAGEM AQUI
+![Alt text](images/arquitetura_app_image.png)
 
 ## Começando
 #### Requisitos:
@@ -20,6 +20,8 @@ IMAGEM AQUI
 
 #### Opcional:
 - [AWS SAM CLI](https://aws.amazon.com/pt/serverless/sam/)
+- [Docker](https://www.docker.com/)
+- [WSL](https://learn.microsoft.com/pt-br/windows/wsl/install)
 
 ### Siga os passos
 ```Faça o download e descompacte o arquivo case_itau.zip em seguida entre na pasta case_itau. Você verá algo como a seguinte estrutura de pastas:```
@@ -36,7 +38,8 @@ IMAGEM AQUI
 │   ├── infrastructure
 │   │   └── repositories.py
 │   └── interfaces
-│       └── api.py
+│       ├── api.py
+│       └── utils.py
 ├── function.zip
 ├── requirements.txt
 ├── run.py
@@ -92,7 +95,7 @@ http://localhost:5000/?authors=Tolkien,J.R.R&genres=Fantasy,Adventure&use_api=2
     "status": "successful"
 }
 
-# Localmente você pode também pode utilizar pelo navegador o OpenAPI/Swagger para realizar as chamadas atráves da URL:
+# Você pode também pode utilizar pelo navegador o OpenAPI/Swagger para realizar as chamadas atráves da URL:
 http://localhost:5000/apidocs/
 
 # Depois de tudo testado, o servidor pode ser encerrado e o ambiente virtual desativado
@@ -118,7 +121,8 @@ terraform apply
 
 # Se tudo deu certo você verá a URL pública da aplicação na saída ou poderá consulta no painel da AWS
 # Exemplo de saída
-api_gateway_url = "https://a4o1yhc02cc.execute-api.sa-east-1.amazonaws.com/dev"
+api_gateway_url = "https://gdtz3w67el.execute-api.sa-east-1.amazonaws.com/dev/"
+apidocs = "https://gdtz3w67el.execute-api.sa-east-1.amazonaws.com/dev/apidocs/"
 
 # Como localmente basta realizar os testes atráves do seu aplicativo preferido com a URL e parâmetros de exemplo
 https://a4o1yhc02cc.execute-api.sa-east-1.amazonaws.com/dev/?authors=Tolkien,J.R.R&genres=Fantasy,Adventure&use_api=2
@@ -145,6 +149,9 @@ https://a4o1yhc02cc.execute-api.sa-east-1.amazonaws.com/dev/?authors=Tolkien,J.R
     "status": "successful"
 }
 
+# Você pode também pode utilizar pelo navegador o OpenAPI/Swagger para realizar as chamadas atráves da URL gerada no deploy no path /apidocs/:
+https://vvnrim1h90.execute-api.sa-east-1.amazonaws.com/dev/apidocs/
+
 # Depois de tudo testado, os serviços da AWS podem ser parados/excluídos
 # Apartir da pasta do terraform onde os comandos foram executados, basta rodar o comando
 terraform destroy -auto-approve
@@ -155,6 +162,7 @@ terraform destroy -auto-approve
 ---
 
 ## Documentação da API
+`De preferência faça buscas em inglês, as APIs externas possuem mais livros neste idioma.`
 
 #### Realizando as requisições
 
@@ -259,7 +267,7 @@ terraform destroy -auto-approve
 </details>
 
 #### Exemplo de uso com um programa de consultas
-IMAGEM AQUI
+![Alt text](images/request_app_image.png)
 
 </br>
 
@@ -282,6 +290,7 @@ IMAGEM AQUI
 | Flask | https://flask.palletsprojects.com/en/3.0.x/ |
 | Swagger Documentation | https://swagger.io/docs/ |
 | Excalidraw | https://excalidraw.com/ |
+| DrawIo | https://www.drawio.com/ |
 | ChatGPT | https://chat.openai.com/ |
 | GitHub Copilot Chat | https://code.visualstudio.com/docs/copilot/getting-started-chat |
 
